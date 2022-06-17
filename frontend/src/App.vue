@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { getServerSummary, ServerSummaryResponse } from './services/api'
+import Tumbleweed from './components/Tumbleweed.vue'
 import loader from './assets/loader.svg'
 
 const serverSummary = ref<ServerSummaryResponse | null>(null)
@@ -11,6 +12,10 @@ const serverSummary = ref<ServerSummaryResponse | null>(null)
     await new Promise((res) => setInterval(res, 2000))
   }
 })()
+
+const isServerEmpty = computed(
+  () => Object.values(serverSummary.value ?? {}).reduce((acc, cur) => acc + cur.length, 0) === 0,
+)
 </script>
 
 <template>
@@ -19,7 +24,10 @@ const serverSummary = ref<ServerSummaryResponse | null>(null)
       <img :src="loader" alt="Loader" class="w-full h-full" />
     </div>
     <ul v-else>
-      <template v-for="(users, channel) of serverSummary">
+      <div v-if="isServerEmpty">
+        <Tumbleweed />
+      </div>
+      <template v-else v-for="(users, channel) of serverSummary">
         <li v-if="users.length > 0" class="mt-3">
           <span class="font-bold">💬 {{ channel }}</span>
           <ul>
