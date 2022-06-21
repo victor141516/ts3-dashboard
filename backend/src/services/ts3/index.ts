@@ -8,11 +8,23 @@ export class TeamSpeakClient {
   private username: string
   private password: string
   private cachedResponse: ServerSummaryResponse | null
+  private debug: boolean
 
-  constructor({ host, username, password }: { host: string; username: string; password: string }) {
+  constructor({
+    host,
+    username,
+    password,
+    debug,
+  }: {
+    host: string
+    username: string
+    password: string
+    debug?: boolean
+  }) {
     this.host = host
     this.username = username
     this.password = password
+    this.debug = debug ?? false
     this.init()
     this.cachedResponse = null
   }
@@ -27,7 +39,7 @@ export class TeamSpeakClient {
       keepAlive: true,
     })
     const client = await this.client
-    client.on('debug', console.log)
+    if (this.debug) client.on('debug', console.log)
     client.on('error', (e) => {
       console.error('ts3 error:', e)
     })
