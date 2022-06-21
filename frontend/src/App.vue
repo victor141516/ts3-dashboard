@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { getServerSummary, ServerSummaryResponse } from './services/api'
+import { getServerSummary, sendMessage, ServerSummaryResponse } from './services/api'
 import Tumbleweed from './components/Tumbleweed.vue'
 import loader from './assets/loader.svg'
 
@@ -56,6 +56,11 @@ const isSoundEnabled = ref(false)
 const isServerEmpty = computed(
   () => Object.values(serverSummary.value ?? {}).reduce((acc, cur) => acc + cur.length, 0) === 0,
 )
+
+const composeMessage = (channel: string) => {
+  const message = window.prompt(`Send message to ${channel}`, '')
+  if (message) sendMessage({ channel, message })
+}
 </script>
 
 <template>
@@ -72,7 +77,7 @@ const isServerEmpty = computed(
       </div>
       <template v-else v-for="(users, channel) of serverSummary">
         <li v-if="users.length > 0" class="mt-3">
-          <span class="font-bold">💬 {{ channel }}</span>
+          <span class="font-bold"><button @click="() => composeMessage(channel)">💬</button> {{ channel }}</span>
           <ul>
             <li v-for="user of users">🔵 {{ user }}</li>
           </ul>
