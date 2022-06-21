@@ -1,3 +1,8 @@
+<script lang="ts" setup>
+import tumbleweed from '../assets/tumbleweed.png'
+const image = `url(${tumbleweed})`
+</script>
+
 <template>
   <div class="container">
     <div class="tumbleweed"></div>
@@ -7,21 +12,16 @@
 <style scoped>
 .container {
   position: absolute;
-  /* top: 0; */
   left: 0;
   width: 100%;
   height: 100%;
-  /* overflow: hidden; */
-  background: url('https://curtasaude.com.br/wp-content/uploads/2015/04/correndonocalor.png') no-repeat;
-  background-size: 100%;
 }
 
 .tumbleweed {
   position: absolute;
   width: 70px;
   height: 70px;
-  background: url('https://vignette4.wikia.nocookie.net/imaspeedrunner/images/3/3a/Orphan_tumbleweed.png/revision/latest?cb=20131006213006')
-    no-repeat;
+  background: v-bind(image) no-repeat;
   background-size: 100%;
 }
 
