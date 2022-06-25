@@ -14,6 +14,8 @@ export class TeamSpeakClient {
     clients: Record<string, LibTeamSpeakClient[]> | null
   }
   private resetCacheTimeout: null | NodeJS.Timeout
+  private viewers: Set<string>
+  private viewersTimeouts: Record<string, NodeJS.Timeout>
 
   constructor({
     host,
@@ -37,6 +39,8 @@ export class TeamSpeakClient {
       clients: null,
     }
     this.resetCacheTimeout = null
+    this.viewers = new Set()
+    this.viewersTimeouts = {}
   }
 
   private async init() {
@@ -68,6 +72,12 @@ export class TeamSpeakClient {
     }, 2000)
   }
 
+  addViewer(name: string) {
+    this.viewers.add(name)
+    if (this.viewersTimeouts[name]) clearTimeout(this.viewersTimeouts[name])
+    this.viewersTimeouts[name] = setTimeout(() => this.viewers.delete(name), 5000)
+  }
+
   async getServerSummary(): Promise<ServerSummaryResponse> {
     const client = (await this.client)!
 
@@ -86,7 +96,8 @@ export class TeamSpeakClient {
       return [channel.name, clients]
     })
     const entries = await Promise.all(promises)
-    const result = Object.fromEntries(entries)
+    const result = Object.fromEntries(entries) as Record<string, string[]>
+    result._viewers = Array.from(this.viewers)
     this.resetCache()
     return result
   }

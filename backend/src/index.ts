@@ -14,6 +14,7 @@ app.use(express.json())
 
 app.get('/api/ts3/summary', async (req, res) => {
   const summary = await tsClient.getServerSummary()
+  if (req.headers['x-ts3-viewer-name']) tsClient.addViewer(req.headers['x-ts3-viewer-name'] as string)
   res.json(summary)
 })
 
