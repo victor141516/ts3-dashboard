@@ -16,3 +16,11 @@ export const sendMessage: (params: { channel: string; message: string }) => Prom
     },
     body: JSON.stringify({ channel, message }),
   }).then((r) => r.json())
+
+export const turnBombilla: ({state}: {state: 'on' | 'off'}) => Promise<{ ok: boolean }> = ({state}) => fetch(`${import.meta.env.VITE_API_HOST}/api/bombilla/turn`, {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({ state }),
+}).then((r) => r.json())

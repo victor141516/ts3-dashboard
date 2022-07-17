@@ -12,7 +12,8 @@
     "allowSyntheticDefaultImports": true,
     "isolatedModules": true,
     "resolveJsonModule": true,
-    "typeRoots": ["./src/@types"]
+    "typeRoots": ["./src/@types"],
+    "types": ["node"]
   },
   "ts-node": {
     "require": ["tsconfig-paths/register"]
