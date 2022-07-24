@@ -40,4 +40,13 @@ app.post('/api/bombilla/turn', async (req: Request<unknown, unknown, { state: 'o
   }
 })
 
+app.get('/api/bombilla', async (req, res) => {
+  try {
+    const isOn = await bombilla.status(await bombillaDevice)
+    res.json({ ok: true, isOn })
+  } catch (e) {
+    res.status(500).json({ ok: false, error: (e as Error).toString() })
+  }
+})
+
 app.listen(PORT, () => console.log(`Listening on port ${PORT}`))

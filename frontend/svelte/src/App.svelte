@@ -6,6 +6,7 @@
     getServerSummary,
     sendMessage,
     ServerSummaryResponse,
+    statusBombilla,
     turnBombilla,
   } from "./services/api";
   import { speakNewPeople } from "./services/speaker";
@@ -31,6 +32,9 @@
     ) === 0;
   (async () => {
     while (true) {
+      await statusBombilla().then(({ isOn }) => {
+        bombilla = isOn;
+      });
       await getServerSummary(viewerName).then((data) => {
         onNewData(serverSummary ?? {}, data);
         serverSummary = data;

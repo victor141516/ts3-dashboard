@@ -1,6 +1,6 @@
 import { login as originalLogin } from './login'
 import { listDevices as originalListDevices } from './devices'
-import { turnOn as originalTurnOn, turnOff as originalTurnOff } from './plug'
+import { turnOn as originalTurnOn, turnOff as originalTurnOff, status as originalStatus } from './plug'
 
 let accessToken: string | null = null
 let refreshToken: string | null = null
@@ -28,4 +28,9 @@ export async function turnOn(device: string) {
 export async function turnOff(device: string) {
   if (!accessToken) throw new Error('Login first')
   return originalTurnOff(accessToken, { device })
+}
+
+export async function status(device: string) {
+  if (!accessToken) throw new Error('Login first')
+  return originalStatus(accessToken, { device })
 }

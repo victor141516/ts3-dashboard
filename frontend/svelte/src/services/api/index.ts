@@ -24,3 +24,5 @@ export const turnBombilla: ({state}: {state: 'on' | 'off'}) => Promise<{ ok: boo
   },
   body: JSON.stringify({ state }),
 }).then((r) => r.json())
+
+export const statusBombilla: () => Promise<{ isOn: boolean }> = () => fetch(`${import.meta.env.VITE_API_HOST}/api/bombilla`).then((r) => r.json())
