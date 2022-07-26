@@ -28,7 +28,7 @@ async function turn(accessToken: string, { device, newState }: { device: string;
       'User-Agent': 'okhttp/3.12.1',
     },
   }).then((r) => r.json() as Promise<PlugTurnResponse>)
-  if (result.meta.code !== 200) throw new Error('Error turning plug')
+  if (result.meta.code !== 200) throw new Error(`Error turning plug (${JSON.stringify(result)})`)
 }
 
 export async function status(accessToken: string, { device }: { device: string }) {
@@ -40,7 +40,7 @@ export async function status(accessToken: string, { device }: { device: string }
       'User-Agent': 'okhttp/3.12.1',
     },
   }).then((r) => r.json() as Promise<PlugStatusResponse>)
-  if (result.meta.code !== 200) throw new Error('Error getting plug status')
+  if (result.meta.code !== 200) throw new Error(`Error getting plug status (${JSON.stringify(result)})`)
   return result.switchInfo.enable === 1
 }
 

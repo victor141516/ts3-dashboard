@@ -1,6 +1,9 @@
-import { login as originalLogin } from './login'
+import { login as originalLogin, refresh as originalRefresh } from './login'
 import { listDevices as originalListDevices } from './devices'
 import { turnOn as originalTurnOn, turnOff as originalTurnOff, status as originalStatus } from './plug'
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type OmitFirst<T extends any[]> = T extends [any, ...infer R] ? R : never
 
 let accessToken: string | null = null
 let refreshToken: string | null = null
@@ -15,22 +18,28 @@ export async function login(...params: Parameters<typeof originalLogin>) {
   refreshToken = response.refreshToken
 }
 
-export async function listDevices() {
-  if (!accessToken) throw new Error('Login first')
-  return originalListDevices(accessToken)
+export async function refresh() {
+  const response = await originalRefresh({ accessToken: accessToken!, refreshToken: refreshToken! })
+  if (!response.accessToken) throw new Error('Login failed')
+  accessToken = response.accessToken
+  refreshToken = response.refreshToken
 }
 
-export async function turnOn(device: string) {
-  if (!accessToken) throw new Error('Login first')
-  return originalTurnOn(accessToken, { device })
-}
+const wrapWithRefresh =
+  // prettier-ignore
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  <T extends (...args: any[]) => any>(f: T) =>
+    async (...params: OmitFirst<Parameters<T>>): Promise<Awaited<ReturnType<T>>> => {
+      if (!accessToken) throw new Error('Login first')
+      try {
+        return f(accessToken, ...params)
+      } catch {
+        await refresh()
+        return f(accessToken, ...params)
+      }
+    }
 
-export async function turnOff(device: string) {
-  if (!accessToken) throw new Error('Login first')
-  return originalTurnOff(accessToken, { device })
-}
-
-export async function status(device: string) {
-  if (!accessToken) throw new Error('Login first')
-  return originalStatus(accessToken, { device })
-}
+export const listDevices = () => wrapWithRefresh(originalListDevices)()
+export const turnOn = (device: string) => wrapWithRefresh(originalTurnOn)({ device })
+export const turnOff = (device: string) => wrapWithRefresh(originalTurnOff)({ device })
+export const status = (device: string) => wrapWithRefresh(originalStatus)({ device })

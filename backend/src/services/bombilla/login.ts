@@ -6,11 +6,18 @@ interface LoginResponse {
     rfSessionId: string
   }
 }
+
+interface RefreshResponse {
+  sessionInfo: {
+    sessionId: string
+    refreshSessionId: string
+  }
+}
 const md5 = (s: string) => crypto.createHash('md5').update(s).digest('hex')
 
 export async function login({ email, password }: { email: string; password: string }) {
   const params = new URLSearchParams()
-  params.append('featureCode', 'aee97491c2f59cdfafed42b4133f8908')
+  params.append('featureCode', 'a')
   params.append(
     'pushRegisterJson',
     JSON.stringify([
@@ -61,4 +68,49 @@ export async function login({ email, password }: { email: string; password: stri
   })
     .then((r) => r.json() as Promise<LoginResponse>)
     .then((r) => ({ accessToken: r.loginSession.sessionId, refreshToken: r.loginSession.rfSessionId }))
+}
+
+export async function refresh({ accessToken, refreshToken }: { accessToken: string; refreshToken: string }) {
+  const params = new URLSearchParams()
+  params.append('refreshSessionId', refreshToken)
+  params.append(
+    'pushRegisterJson',
+    JSON.stringify([
+      {
+        channel: 99,
+      },
+      {
+        channel: 6,
+        channelRegisterJson: JSON.stringify({
+          token: 'a',
+        }),
+      },
+    ]),
+  )
+  params.append('pushExtJson', JSON.stringify({ language: '', protoVer: '2' }))
+  params.append('cuName', 'SU4yMDI1')
+  params.append('featureCode', 'a')
+  const body = params.toString()
+
+  return fetch('https://apiieu.ezvizlife.com/v3/apigateway/login', {
+    method: 'PUT',
+    headers: {
+      featureCode: 'a',
+      clientType: '3',
+      osVersion: '12',
+      clientVersion: '5.6.5.0706',
+      customno: '1000001',
+      clientNo: 'google',
+      appId: 'ys7',
+      language: 'en_US',
+      lang: 'en',
+      sessionId: accessToken,
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'Accept-Encoding': 'gzip',
+      'User-Agent': 'okhttp/3.12.1',
+    },
+    body,
+  })
+    .then((r) => r.json() as Promise<RefreshResponse>)
+    .then((r) => ({ accessToken: r.sessionInfo.sessionId, refreshToken: r.sessionInfo.refreshSessionId }))
 }
