@@ -32,8 +32,8 @@ app.post('/api/ts3/message', async (req: Request<unknown, unknown, { channel: st
 app.post('/api/bombilla/turn', async (req: Request<unknown, unknown, { state: 'on' | 'off' }>, res) => {
   const { state } = req.body
   try {
-    if (state === 'on') await bombilla.turnOn(await bombillaDevice)
-    if (state === 'off') await bombilla.turnOff(await bombillaDevice)
+    if (state === 'on') await bombilla.turnOn({ device: await bombillaDevice })
+    if (state === 'off') await bombilla.turnOff({ device: await bombillaDevice })
     res.json({ ok: true })
   } catch (e) {
     res.status(500).json({ ok: false, error: (e as Error).toString() })
@@ -42,7 +42,7 @@ app.post('/api/bombilla/turn', async (req: Request<unknown, unknown, { state: 'o
 
 app.get('/api/bombilla', async (req, res) => {
   try {
-    const isOn = await bombilla.status(await bombillaDevice)
+    const isOn = await bombilla.status({ device: await bombillaDevice })
     res.json({ ok: true, isOn })
   } catch (e) {
     res.status(500).json({ ok: false, error: (e as Error).toString() })

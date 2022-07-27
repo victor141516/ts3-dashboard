@@ -39,7 +39,7 @@ const wrapWithRefresh =
       }
     }
 
-export const listDevices = () => wrapWithRefresh(originalListDevices)()
-export const turnOn = (device: string) => wrapWithRefresh(originalTurnOn)({ device })
-export const turnOff = (device: string) => wrapWithRefresh(originalTurnOff)({ device })
-export const status = (device: string) => wrapWithRefresh(originalStatus)({ device })
+export const listDevices = wrapWithRefresh(originalListDevices)
+export const turnOn = wrapWithRefresh(originalTurnOn)
+export const turnOff = wrapWithRefresh(originalTurnOff)
+export const status = wrapWithRefresh(originalStatus)
